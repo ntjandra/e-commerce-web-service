@@ -31,7 +31,7 @@ def insert_transaction(payer, points, timestamp):
 def spend_points(owed_points):
     c = conn.cursor()
 
-    # Keep track of individual's spending
+    # Keep track of where the credits came from.
     usage = {}
 
     # Get first 
@@ -41,7 +41,6 @@ def spend_points(owed_points):
     # Stop when transaction cannot be fufilled or finished spending points
     while (result != None) and (owed_points > 0):
         payer, owned_points = result
-        print(payer, owned_points)
         # Track which transactions to redeem.
         if payer not in usage:
             usage[payer] = 0
@@ -55,19 +54,18 @@ def spend_points(owed_points):
         else:
             # Own enough points
             usage[payer] -= owed_points
- 
+            owed_points = 0
+
         # Grab next transaction
         result = c.fetchone()
-        print(result)
-    print(payer, owned_points, usage[payer])
-    # at the end return the amount spent
 
+    # at the end return the amount spent
     # Using these new values, we can safety add the redemption as a transaction.
     return usage
 
 ### Test 1: Insertion
 init_db()
-insert_transaction("Nathan", 5000, "2020-11-02T14:00:00Z")
+insert_transaction("Nathan", 5000, "2020-11-02T14:01:00Z")
 insert_transaction("DANNON", 1000, "2020-11-02T14:00:00Z")
 insert_transaction("UNILEVER", 200,"2020-10-31T11:00:00Z")
 insert_transaction("DANNON", -200, "2020-10-31T15:00:00Z")
