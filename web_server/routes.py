@@ -7,6 +7,7 @@
 - Withdraw points from all users
 '''
 import json
+from datetime import datetime
 from flask import jsonify, flash, redirect, request, abort, Response
 from web_server import app
 from .database import insert_transaction, spend_points, view_balance
@@ -27,12 +28,18 @@ def add_transaction():
 def redeem_points():
     form = request.json
     points = int(form['points'])
-    # TODO: Call to Database to deduct the points from the balance
+    # Call to Database to deduct the points from the balance
     usage = spend_points(points)
+    now = datetime.now()
+    today = now.strftime("%Y-%d-%mT%H:%M:%SZ")
+    for payer, points in usage.items():
+        insert_transaction(payer, points, today)
     # Return a list of jsons of each user's deducted value
     usage_json = json.dumps(usage)
     # return Response('{"message":"Spent ' + str(points) + ' points"}', status=202)
-    return usage_json
+
+    # Does not like returning lists, so we add the '[' ']'
+    return '[' + usage_json + ']'
 
 # Retrieve the user's balance
 @app.route("/api/user/balance", methods=['GET'])
