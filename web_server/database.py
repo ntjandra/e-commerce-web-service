@@ -63,6 +63,28 @@ def spend_points(owed_points):
     # Using these new values, we can safely add each redemption as a transaction. (in the route)
     return usage
 
+def view_balance():
+    c = conn.cursor()
+
+    # Keep track of where the credits came from.
+    balance = {}
+    # Get first 
+    c.execute('''SELECT payer, points FROM transactions ORDER BY timestamp ASC''')
+    result = c.fetchone()
+ 
+    # Stop when out of transactions
+    while result != None:
+        payer, owned_points = result
+        
+        if payer not in balance:
+            balance[payer] = 0
+
+        balance[payer] += owned_points
+        # Grab next transaction
+        result = c.fetchone()
+
+    return balance
+
 ### Test 1: Insertion
 init_db()
 insert_transaction("Nathan", 5000, "2020-11-02T14:01:00Z")
@@ -90,3 +112,6 @@ today = now.strftime("%Y-%d-%mT%H:%M:%SZ")
 insert_transaction("DANNON", -100, today)
 insert_transaction("UNILEVER", -200, today)
 insert_transaction("MILLER COORS", -4700, today)
+
+balance = view_balance()
+print("Balance", balance)
