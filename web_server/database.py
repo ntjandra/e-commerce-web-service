@@ -2,7 +2,7 @@
 # from web_server import conn
 import sqlite3
 from datetime import datetime
-conn = sqlite3.connect('test.db')
+from web_server import conn
 
 # Create a Table that has payer (string), points (integer), timestamp (date).
 # Note: SQLite3 stores dates as TEXT since it lacks a date datatype
@@ -84,34 +84,3 @@ def view_balance():
         result = c.fetchone()
 
     return balance
-
-### Test 1: Insertion
-init_db()
-insert_transaction("Nathan", 5000, "2020-11-02T14:01:00Z")
-insert_transaction("DANNON", 1000, "2020-11-02T14:00:00Z")
-insert_transaction("UNILEVER", 200,"2020-10-31T11:00:00Z")
-insert_transaction("DANNON", -200, "2020-10-31T15:00:00Z")
-insert_transaction("MILLER COORS", 10000, "2020-11-01T14:00:00Z")
-insert_transaction("DANNON", 300, "2020-10-31T10:00:00Z")
-# show_db()
-
-### Test 2: Update, based on Redemption
-spent = spend_points(5000)
-print("Redeemed", spent)
-# show_db()
-
-### Test 2a: Check Balance
-# Use the info from the spend_points to withdraw from others.
-# {'DANNON': -100, 'UNILEVER': -200, 'MILLER COORS': -4700}
-
-# Format of the datetime should match database
-now = datetime.now()
-print("now =", now)
-today = now.strftime("%Y-%d-%mT%H:%M:%SZ")
-
-insert_transaction("DANNON", -100, today)
-insert_transaction("UNILEVER", -200, today)
-insert_transaction("MILLER COORS", -4700, today)
-
-balance = view_balance()
-print("Balance", balance)
