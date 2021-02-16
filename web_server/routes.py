@@ -6,6 +6,7 @@
 - View full record of transactions ordered by date
 - Withdraw points from all users
 '''
+import json
 from flask import jsonify, flash, redirect, request, abort, Response
 from web_server import app
 from .database import insert_transaction, spend_points, view_balance
@@ -29,11 +30,15 @@ def redeem_points():
     # TODO: Call to Database to deduct the points from the balance
     usage = spend_points(points)
     # Return a list of jsons of each user's deducted value
-    print(usage)
-    return Response('{"message":"Spent ' + str(points) + ' points"}', status=202)
+    usage_json = json.dumps(usage)
+    # return Response('{"message":"Spent ' + str(points) + ' points"}', status=202)
+    return usage_json
 
 # Retrieve the user's balance
 @app.route("/api/user/balance", methods=['GET'])
 def check_balance():
     # Returns a list of all remaining balances from user transactions.
-    return Response('{"message":"Remaining Balance"}', status=200)
+    balances = view_balance()
+    # return Response('{"message":"Remaining Balance"}', status=200)
+    balances_json = json.dumps(balances)
+    return balances_json
