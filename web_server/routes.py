@@ -25,6 +25,12 @@ def add_transaction():
 def redeem_points():
     form = request.json
     points = int(form['points'])
-    return Response('{"message":"Spent ' + str(points) + ' points"}')
+    return Response('{"message":"Spent ' + str(points) + ' points"}', status=202)
     # TODO: Call to Database to deduct the points from the balance
     # Return a list of jsons of each user's deducted value
+
+# Retrieve the user's balance
+@app.route("/api/user/balance", methods=['GET'])
+def check_balance():
+    # Returns a list of all remaining balances from user transactions.
+    return Response('{"message":"Remaining Balance"}', status=200)
