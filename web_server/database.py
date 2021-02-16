@@ -28,40 +28,42 @@ def insert_transaction(payer, points, timestamp):
 
 # Conditions: Point Value must never dip below zero
 # Requirement: Deletion happens from oldest transaction
-def spend_points(points):
+def spend_points(owed_points):
     c = conn.cursor()
 
     # Keep track of individual's spending
-    clients = {}
     usage = {}
 
     # Get first 
     c.execute('''SELECT payer, points FROM transactions ORDER BY timestamp ASC''')
     result = c.fetchone()
-    while result != None:
+ 
+    # Stop when transaction cannot be fufilled or finished spending points
+    while (result != None) and (owed_points > 0):
         payer, owned_points = result
-
-        # Check if the payer is new.
-        if payer not in clients:
-            clients[payer] = points
+        print(payer, owned_points)
+        # Track which transactions to redeem.
+        if payer not in usage:
             usage[payer] = 0
 
         # subtract result with points until the value is zero.
-        if owned_points > clients[payer]:
-            spent_points = owned_points - clients[payer]
-            clients[payer] -= spent_points
-            usage[payer] += spent_points
+        if owed_points > owned_points:
+            # Spend all the owned points
+            owed_points -= owned_points
+            # Log where the points came from
+            usage[payer] -= owned_points
         else:
-            # Don't have enough points
-            # Deduct remainer into spent
-            usage[payer] += clients[payer]
-            clients[payer] = 0
-
+            # Own enough points
+            usage[payer] -= owed_points
+ 
         # Grab next transaction
         result = c.fetchone()
-    
+        print(result)
+    print(payer, owned_points, usage[payer])
     # at the end return the amount spent
-    return clients
+
+    # Using these new values, we can safety add the redemption as a transaction.
+    return usage
 
 ### Test 1: Insertion
 init_db()
@@ -71,8 +73,9 @@ insert_transaction("UNILEVER", 200,"2020-10-31T11:00:00Z")
 insert_transaction("DANNON", -200, "2020-10-31T15:00:00Z")
 insert_transaction("MILLER COORS", 10000, "2020-11-01T14:00:00Z")
 insert_transaction("DANNON", 300, "2020-10-31T10:00:00Z")
-show_db()
+# show_db()
 
 ### Test 2: Update, based on Redemption
-spend_points(5000)
-show_db
+spent = spend_points(5000)
+print("Redeemed", spent)
+# show_db()
