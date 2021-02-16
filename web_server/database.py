@@ -84,3 +84,5 @@ def view_balance():
         result = c.fetchone()
 
     return balance
+
+init_db()

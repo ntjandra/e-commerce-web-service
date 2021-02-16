@@ -8,7 +8,7 @@
 '''
 from flask import jsonify, flash, redirect, request, abort, Response
 from web_server import app
-from database import insert_transaction, spend_points, view_balance
+from .database import insert_transaction, spend_points, view_balance
 
 # Adds a transaction given Payer's name, points, and timestamp 
 @app.route("/api/user/transaction", methods=['PUT'])
@@ -26,9 +26,11 @@ def add_transaction():
 def redeem_points():
     form = request.json
     points = int(form['points'])
-    return Response('{"message":"Spent ' + str(points) + ' points"}', status=202)
     # TODO: Call to Database to deduct the points from the balance
+    usage = spend_points(points)
     # Return a list of jsons of each user's deducted value
+    print(usage)
+    return Response('{"message":"Spent ' + str(points) + ' points"}', status=202)
 
 # Retrieve the user's balance
 @app.route("/api/user/balance", methods=['GET'])
