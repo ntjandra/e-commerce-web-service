@@ -8,6 +8,7 @@
 '''
 from flask import jsonify, flash, redirect, request, abort, Response
 from web_server import app
+from database import insert_transaction, spend_points, view_balance
 
 # Adds a transaction given Payer's name, points, and timestamp 
 @app.route("/api/user/transaction", methods=['PUT'])
@@ -16,8 +17,8 @@ def add_transaction():
     payer = str(form['payer'])
     points = int(form['points'])
     timestamp = str(form['timestamp'])
-    # TODO: Replace with the DB call/action
-    # print(payer, points, timestamp)
+
+    insert_transaction(payer, points, timestamp)
     return Response('{"message":"Transaction Added"}', status=202)
 
 # Redeem points for a reward
