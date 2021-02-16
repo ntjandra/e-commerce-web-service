@@ -1,7 +1,7 @@
 # Experimenting with SQLite3
 # from web_server import conn
 import sqlite3
-
+from datetime import datetime
 conn = sqlite3.connect('test.db')
 
 # Create a Table that has payer (string), points (integer), timestamp (date).
@@ -60,7 +60,7 @@ def spend_points(owed_points):
         result = c.fetchone()
 
     # at the end return the amount spent
-    # Using these new values, we can safety add the redemption as a transaction.
+    # Using these new values, we can safely add each redemption as a transaction. (in the route)
     return usage
 
 ### Test 1: Insertion
@@ -77,3 +77,16 @@ insert_transaction("DANNON", 300, "2020-10-31T10:00:00Z")
 spent = spend_points(5000)
 print("Redeemed", spent)
 # show_db()
+
+### Test 2a: Check Balance
+# Use the info from the spend_points to withdraw from others.
+# {'DANNON': -100, 'UNILEVER': -200, 'MILLER COORS': -4700}
+
+# Format of the datetime should match database
+now = datetime.now()
+print("now =", now)
+today = now.strftime("%Y-%d-%mT%H:%M:%SZ")
+
+insert_transaction("DANNON", -100, today)
+insert_transaction("UNILEVER", -200, today)
+insert_transaction("MILLER COORS", -4700, today)
