@@ -11,16 +11,20 @@ Now the server is up and users may call the endpoints
 
 ### Gain Points
 Send a PUT request to ```http://localhost:5000/api/user/transaction``` to earn points
-It accepts JSONs with the <payer>, <points>, and <timestamp> the transaction occured.
+
+It accepts JSONs with the payer, points, and timestamp
 
 ### Redeem points
 Send a PUT request to ```http://localhost:5000/api/user/redeem``` to redeem points
-It accepts JSONs with the <points> to be subtracted from your account.
 
+It accepts JSONs with the points to be subtracted from your account.
+
+It sends back a response of the the transactions done to remove the points.
 
 ### Check total points
 Send a GET request to ```http://localhost:5000/api/user/balance``` to see your detailed balance and the payer who sent them.
-The caller recieves a JSON of the <payer> and <points> 
+
+The caller recieves a JSON of the payer and points. 
 
 ### Known bugs
 Bugs are outlined in [#issue](https://github.com/ntjandra/e-commerce-web-service/issues)
